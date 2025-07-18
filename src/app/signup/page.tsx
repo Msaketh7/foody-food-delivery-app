@@ -46,7 +46,7 @@ export default function SignUp()  {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-800">
       <div className="flex flex-col items-center justify-center border border-gray-300 rounded-md p-6 bg-white drop-shadow-xl/30 opacity-75">
-      <h1 className="text-gray-900 bg-gray-300 px-10 py-2 rounded font-serif font-bold tracking-wider mb-5 outline outline-offset-2">{loading ? "Processing" : "Signup"}</h1>
+      <h1 className="text-gray-900 bg-gray-300 px-10 py-2 rounded-tl-3xl  rounded-br-3xl rounded-bl-md rounded-tr-md font-serif font-bold tracking-wider mb-5 outline outline-offset-2">SignUp</h1>
       <hr/>
       <label className='text-gray-900 font-mono' htmlFor="username">username</label>
       <input

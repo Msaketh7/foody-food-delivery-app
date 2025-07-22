@@ -65,15 +65,17 @@ export default function Login()  {
         className="p-2 border border-gray-300 rounded-md mb-4 text-gray-900 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent outline outline-offset-2"
       />
       <button 
-      disabled={buttonDisabled || loading}
+      disabled={buttonDisabled }
       className={`bg-gray-700 text-white p-2 rounded-md mb-4 cursor-pointer w-full font-mono transition delay-50 duration-200 ease-in-out ${
     loading ? "opacity-50 cursor-not-allowed" : "hover:-translate-y-1 hover:scale-110 hover:bg-indigo-500"
   }`}
       onClick={onLogin}>
         {loading ? "Processing..." : buttonDisabled ? "No Login" : "Login"}
         </button>
-        <p className='text-gray-500 font-mono'>No account?</p>
-      <Link className='text-gray-900 font-mono underline underline-offset-2' href = "/signup">SignUp Here</Link>
+        <Link className='text-gray-900 font-mono underline underline-offset-2 text-sm' href = "/forgotpassword">Forgot Password?</Link>
+        <p className='text-gray-500 font-mono my-1 text-sm '>No account? <br />
+      <Link className='text-gray-900 font-mono underline underline-offset-2 text-sm' href = "/signup">SignUp Here</Link>
+      </p>
       </div>
     </div>
   )

@@ -1,4 +1,4 @@
-import nodemailer from 'nodemailer';
+import nodemailer from "nodemailer";
 import User from "@/models/userModel";
 import crypto from "crypto";
 
@@ -6,39 +6,42 @@ interface SendEmailProps {
   email: string;
   emailType: "VERIFY" | "RESET";
   userId: string;
+  token?: string; // optional token
 }
 
-export const sendEmail = async ({ email, emailType, userId }: SendEmailProps) => {
+export const sendEmail = async ({ email, emailType, userId, token }: SendEmailProps) => {
   try {
-    const token = crypto.randomBytes(32).toString("hex");
+    // Generate a token if not provided
+    const secureToken = token || crypto.randomBytes(32).toString("hex");
 
-    // Update user with verification or reset token
+    // Update the user with the token and expiry
     if (emailType === "VERIFY") {
       await User.findByIdAndUpdate(userId, {
-        verifyToken: token,
-        verifyTokenExpiry: Date.now() + 3600000, // 1 hour
+        verifyToken: secureToken,
+        verifyTokenExpiry: Date.now() + 3600000,
       });
     } else if (emailType === "RESET") {
       await User.findByIdAndUpdate(userId, {
-        forgotPasswordToken: token,
-        forgotPasswordTokenExpiry: Date.now() + 3600000,
+        resetPasswordToken: secureToken,
+        resetPasswordTokenExpiry: Date.now() + 3600000,
       });
     }
 
-    // Create transporter using SendGrid SMTP
+    // Create nodemailer transport
     const transport = nodemailer.createTransport({
       host: "smtp.sendgrid.net",
       port: 587,
       auth: {
-        user: process.env.SENDGRID_USER || "apikey", // should be literally 'apikey'
+        user: process.env.SENDGRID_USER || "apikey",
         pass: process.env.SENDGRID_API_KEY!,
       },
     });
 
-    // Choose URL based on email type
+    // Determine the correct endpoint and URL
     const endpoint = emailType === "VERIFY" ? "verifyemail" : "resetpassword";
-    const url = `${process.env.DOMAIN}/${endpoint}?token=${token}`;
+    const url = `${process.env.DOMAIN}/${endpoint}?token=${secureToken}`;
 
+    // Email content
     const mailOptions = {
       from: process.env.FROM_EMAIL || "msaketh7@gmail.com",
       to: email,
@@ -50,6 +53,7 @@ export const sendEmail = async ({ email, emailType, userId }: SendEmailProps) =>
       `,
     };
 
+    // Send the email
     const mailResponse = await transport.sendMail(mailOptions);
     return mailResponse;
 

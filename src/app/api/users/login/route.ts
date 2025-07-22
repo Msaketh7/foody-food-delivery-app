@@ -23,10 +23,15 @@ export async function POST(request: NextRequest) {
         console.log("User does not exist");
       return NextResponse.json({ error: "User does not exist" }, { status: 400 });
     }
+    //check if user is verified
+    if (!user.isVerfied) {
+      return NextResponse.json({ error: "Email not verified" }, { status: 401 });
+    }
+
     //check if password is correct
-    const validPassword = await bcryptjs.compare(password, user.password);
-    console.log(validPassword);
-    if (!validPassword) {
+    const isMatch = await bcryptjs.compare(password, user.password);
+    console.log(isMatch);
+    if (!isMatch) {
         console.log("Invalid password");
       return NextResponse.json({ error: "Invalid password" }, { status: 400 });
     }

@@ -1,5 +1,5 @@
 "use client"
-
+export const dynamic = "force-dynamic";
 import axios from "axios"
 import Link from "next/link"
 import { useRouter } from "next/navigation";

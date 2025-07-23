@@ -1,92 +1,150 @@
-"use client"
+"use client";
 export const dynamic = "force-dynamic";
-import React, {useEffect} from 'react'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import axios from 'axios'
-import toast from 'react-hot-toast'
 
+import React, { useEffect, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import axios from "axios";
+import toast from "react-hot-toast";
 
-export default function SignUp()  {
+export default function SignUp() {
   const router = useRouter();
-  const [user, setUser] = React.useState({
+  const [user, setUser] = useState({
     email: "",
     password: "",
     username: "",
-  })
-  const [buttonDisabled, setButtonDisabled] = React.useState(false);
-  const [loading, setLoading] = React.useState(false);
+  });
+  const [buttonDisabled, setButtonDisabled] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [darkMode, setDarkMode] = useState(true);
+
+  const themeClasses = darkMode
+    ? "bg-gray-900 text-white"
+    : "bg-white text-gray-900";
+
+  const inputClasses = darkMode
+    ? "bg-gray-800 text-white border-gray-600"
+    : "bg-gray-100 text-gray-900 border-gray-300";
 
   const onSignup = async () => {
     try {
       setLoading(true);
-      const response = await axios.post('/api/users/signup', user);
-      console.log("Signup success", response.data);
-      toast.success("Signup successful! Please check your email to verify your account.");
-      router.push('/login');
+      const response = await axios.post("/api/users/signup", user);
+      toast.success(
+        "Signup successful! Please check your email to verify your account."
+      );
+      router.push("/login");
     } catch (error: any) {
-      console.error("Signup error:", error);
-      toast.error(error.message || "An error occurred during signup");
-
+      toast.error(
+        error.response?.data?.error || error.message || "Signup failed"
+      );
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    if (user.email.length > 0 && user.password.length > 0 && user.username.length > 0) {
-      setButtonDisabled(false);
-    }
-    else {
-      setButtonDisabled(true);
-    }
-
+    setButtonDisabled(!(user.email && user.password && user.username));
   }, [user]);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-800">
-      <div className="flex flex-col items-center justify-center border border-gray-300 rounded-md p-6 bg-white drop-shadow-xl/30 opacity-75">
-      <h1 className="text-gray-900 bg-gray-300 px-10 py-2 rounded-tl-3xl  rounded-br-3xl rounded-bl-md rounded-tr-md font-serif font-bold tracking-wider mb-5 outline outline-offset-2">SignUp</h1>
-      <hr/>
-      <label className='text-gray-900 font-mono' htmlFor="username">username</label>
-      <input
-        id="username"
-        type="text"
-        placeholder="Username"
-        value={user.username}
-        onChange={(e) => setUser({ ...user, username: e.target.value })}
-         className="p-2 border border-gray-300 rounded-md mb-4 text-gray-900 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent outline outline-offset-2"
-      />
-      <label className='text-gray-900 font-mono' htmlFor="email">email</label>
-      <input
-        id="email"
-        type="text"
-        placeholder="email"
-        value={user.email}
-        onChange={(e) => setUser({ ...user, email: e.target.value })}
-        className="p-2 border border-gray-300 rounded-md mb-4 text-gray-900 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent outline outline-offset-2"
-      />
-      <label className='text-gray-900 font-mono' htmlFor="password">password</label>
-      <input
-        id="password"
-        type="password"
-        placeholder="password"
-        value={user.password}
-        onChange={(e) => setUser({ ...user, password: e.target.value })}
-        className="p-2 border border-gray-300 rounded-md mb-4 text-gray-900 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent outline outline-offset-2"
-      />
-      <button
-  disabled={buttonDisabled || loading}
-  className={`bg-gray-700 text-white p-2 rounded-md mb-4 cursor-pointer w-full font-mono transition delay-50 duration-200 ease-in-out ${
-    loading ? "opacity-50 cursor-not-allowed" : "hover:-translate-y-1 hover:scale-110 hover:bg-indigo-500"
-  }`}
-  onClick={onSignup}
->
-  {loading ? "Processing..." : buttonDisabled ? "No signup" : "Signup"}
-</button>
-         <p className='text-gray-500 font-mono'>Already have account?</p>
-      <Link className='text-gray-900 font-mono underline underline-offset-2' href = "/login"> Login Here</Link>
-      </div>
+    <div className={`${themeClasses} min-h-screen flex flex-col transition duration-300`}>
+      {/* Header */}
+      <header className="w-full p-6 border-b border-gray-700 flex items-center justify-between bg-white shadow-xl/30 shadow-indigo-500 rounded-b-lg">
+        <h1 className="text-2xl font-bold text-indigo-500">MyApp</h1>
+        <nav className="flex gap-6 text-sm sm:text-base font-medium font-mono space-x-4 text-indigo-700">
+          <Link href="/" className="hover:underline underline-offset-4">
+            Home
+          </Link>
+          <Link href="/login" className="hover:underline underline-offset-4">
+            Login
+          </Link>
+        </nav>
+        <button
+          onClick={() => setDarkMode(!darkMode)}
+          className="bg-gray-700 text-white px-4 py-1 rounded hover:bg-gray-600 text-sm"
+        >
+          {darkMode ? "Light Mode" : "Dark Mode"}
+        </button>
+      </header>
+
+      {/* Signup Form Section */}
+      <main className="flex flex-1 items-center justify-center px-4 py-12">
+        <div className="bg-white text-gray-900 rounded-2xl shadow-xl/30 shadow-indigo-500 p-8 max-w-md w-full">
+          <h2 className="text-2xl font-semibold mb-4 text-center text-indigo-600">
+            Sign Up
+          </h2>
+
+          <label
+            className="block mb-2 text-sm font-mono text-gray-700"
+            htmlFor="username"
+          >
+            Username
+          </label>
+          <input
+            id="username"
+            type="text"
+            placeholder="Username"
+            value={user.username}
+            onChange={(e) => setUser({ ...user, username: e.target.value })}
+            className={`${inputClasses} w-full p-3 mb-4 rounded-md border focus:outline-none focus:ring-2 focus:ring-indigo-500`}
+          />
+
+          <label
+            className="block mb-2 text-sm font-mono text-gray-700"
+            htmlFor="email"
+          >
+            Email
+          </label>
+          <input
+            id="email"
+            type="email"
+            placeholder="you@example.com"
+            value={user.email}
+            onChange={(e) => setUser({ ...user, email: e.target.value })}
+            className={`${inputClasses} w-full p-3 mb-4 rounded-md border focus:outline-none focus:ring-2 focus:ring-indigo-500`}
+          />
+
+          <label
+            className="block mb-2 text-sm font-mono text-gray-700"
+            htmlFor="password"
+          >
+            Password
+          </label>
+          <input
+            id="password"
+            type="password"
+            placeholder="Enter password"
+            value={user.password}
+            onChange={(e) => setUser({ ...user, password: e.target.value })}
+            className={`${inputClasses} w-full p-3 mb-4 rounded-md border focus:outline-none focus:ring-2 focus:ring-indigo-500`}
+          />
+
+          <button
+            disabled={buttonDisabled || loading}
+            onClick={onSignup}
+            className={`w-full bg-indigo-600 text-white p-3 rounded-md transition duration-300 ${
+              loading ? "opacity-50 cursor-not-allowed" : "hover:bg-indigo-500"
+            }`}
+          >
+            {loading ? "Signing up..." : "Sign Up"}
+          </button>
+
+          <div className="text-center mt-4">
+            <p className="text-sm text-gray-600">
+              Already have an account?{" "}
+              <Link href="/login" className="text-indigo-600 hover:underline">
+                Login
+              </Link>
+            </p>
+          </div>
+        </div>
+      </main>
+
+      {/* Footer */}
+      <footer className="w-full p-4 border-t border-gray-700 text-center text-sm">
+        © {new Date().getFullYear()} MyApp. All rights reserved.
+      </footer>
     </div>
-  )
+  );
 }

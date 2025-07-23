@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import toast from "react-hot-toast";
+import Link from "next/link";
 
 export default function ResetPasswordForm() {
   const router = useRouter();
@@ -13,6 +14,15 @@ export default function ResetPasswordForm() {
 
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [darkMode, setDarkMode] = useState(true);
+
+  const themeClasses = darkMode
+    ? "bg-gray-900 text-white"
+    : "bg-white text-gray-900";
+
+  const inputClasses = darkMode
+    ? "bg-gray-800 text-white border-gray-600"
+    : "bg-gray-100 text-gray-900 border-gray-300";
 
   const handleSubmit = async () => {
     if (!password) {
@@ -22,7 +32,7 @@ export default function ResetPasswordForm() {
 
     try {
       setLoading(true);
-      const { data } = await axios.post("/api/users/resetpassword", {
+      const { data } = await axios.patch("/api/users/resetpassword", {
         token,
         password,
       });
@@ -37,28 +47,61 @@ export default function ResetPasswordForm() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-800">
-      <div className="flex flex-col items-center justify-center border border-gray-300 rounded-md p-6 bg-white drop-shadow-xl/30 opacity-75">
-        <h1 className="text-gray-900 bg-gray-300 px-10 py-2 rounded-tl-3xl rounded-br-3xl rounded-bl-md rounded-tr-md font-serif font-bold tracking-wider mb-5 outline outline-offset-2">
-          Reset Password
-        </h1>
-        <input
-          type="password"
-          placeholder="Enter new password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="p-2 border border-gray-300 rounded-md mb-4 text-gray-900 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent outline outline-offset-2"
-        />
+    <div className={`${themeClasses} min-h-screen flex flex-col transition duration-300`}>
+      {/* Header */}
+      <header className="w-full p-6 border-b border-gray-700 flex items-center justify-between bg-white shadow-xl/30 shadow-indigo-500 rounded-b-lg">
+        <h1 className="text-2xl font-bold text-indigo-500">MyApp</h1>
+        <nav className="flex gap-6 text-sm sm:text-base font-medium font-mono space-x-4 text-indigo-700">
+          <Link href="/" className="hover:underline underline-offset-4">Home</Link>
+          <Link href="#" className="hover:underline underline-offset-4">About</Link>
+          <Link href="#" className="hover:underline underline-offset-4">Contact</Link>
+        </nav>
         <button
-          onClick={handleSubmit}
-          disabled={loading}
-          className={`bg-gray-700 rounded-lg p-2 cursor-pointer ${
-            loading ? "opacity-50 cursor-not-allowed" : ""
-          }`}
+          onClick={() => setDarkMode(!darkMode)}
+          className="bg-gray-700 text-white px-4 py-1 rounded hover:bg-gray-600 text-sm"
         >
-          {loading ? "Resetting..." : "Reset Password"}
+          {darkMode ? "Light Mode" : "Dark Mode"}
         </button>
-      </div>
+      </header>
+
+      {/* Main Section */}
+      <main className="flex flex-1 items-center justify-center px-4 py-12">
+        <div className="bg-white text-gray-900 rounded-2xl shadow-xl/30 shadow-indigo-500 p-8 max-w-md w-full">
+          <h2 className="text-2xl font-semibold mb-6 text-center text-indigo-600">Reset Password</h2>
+          <p className="text-sm text-center mb-6 text-gray-600">Enter your new password to reset your account.</p>
+
+          <label className="text-sm text-gray-700 mb-1 font-medium" htmlFor="password">New Password</label>
+          <input
+            id="password"
+            type="password"
+            placeholder="Enter new password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className={`${inputClasses} w-full p-3 mb-4 rounded-md border focus:outline-none focus:ring-2 focus:ring-indigo-500`}
+          />
+          <button
+            onClick={handleSubmit}
+            disabled={loading}
+            className={`w-full p-3 rounded-md font-medium transition ${
+              loading
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-indigo-600 text-white hover:bg-indigo-500"
+            }`}
+          >
+            {loading ? "Resetting..." : "Reset Password"}
+          </button>
+
+          <p className="text-sm text-center mt-4 text-gray-600">
+            Remembered your password?{" "}
+            <Link href="/login" className="text-indigo-500 hover:underline">Login</Link>
+          </p>
+        </div>
+      </main>
+
+      {/* Footer */}
+      <footer className="w-full p-4 border-t border-gray-700 text-center text-sm">
+        © {new Date().getFullYear()} MyApp. All rights reserved.
+      </footer>
     </div>
   );
 }

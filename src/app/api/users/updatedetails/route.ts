@@ -8,7 +8,7 @@ connect();
 export async function PATCH(request: NextRequest) {
   try {
     const userId = await getDataFromToken(request);
-    const { username, email } = await request.json();
+    const { username, email , profileImage} = await request.json();
 
     if (!username || !email) {
       return NextResponse.json(
@@ -19,7 +19,7 @@ export async function PATCH(request: NextRequest) {
 
     const updatedUser = await User.findByIdAndUpdate(
       userId,
-      { username, email},
+      { username, email, profileImage },
       { new: true , runValidators: true}
     ).select("-password");
 

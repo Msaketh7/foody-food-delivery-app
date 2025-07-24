@@ -32,7 +32,7 @@ export const sendEmail = async ({ email, emailType, userId, token }: SendEmailPr
       host: "smtp.sendgrid.net",
       port: 587,
       auth: {
-        user: process.env.SENDGRID_USER || "apikey",
+        user: "apikey",
         pass: process.env.SENDGRID_API_KEY!,
       },
     });

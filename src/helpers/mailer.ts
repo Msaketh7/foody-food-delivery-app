@@ -9,7 +9,7 @@ interface SendEmailProps {
   token?: string; // optional token
 }
 
-export const sendEmail = async ({ email, emailType, userId, token }: SendEmailProps) => {
+// export const sendEmail = async ({ email, emailType, userId, token }: SendEmailProps) => {
   try {
     // Generate a token if not provided
     const secureToken = token || crypto.randomBytes(32).toString("hex");
@@ -27,17 +27,24 @@ export const sendEmail = async ({ email, emailType, userId, token }: SendEmailPr
       });
     }
 
+    if (!process.env.SENDGRID_API_KEY) {
+  console.error("❌ SENDGRID_API_KEY is missing");
+  throw new Error("SENDGRID_API_KEY is missing");
+}
+
+console.log("✅ SENDGRID_API_KEY found:", process.env.SENDGRID_API_KEY.slice(0, 5));
+
     // Create nodemailer transport
     const transport = nodemailer.createTransport({
       host: "smtp.sendgrid.net",
       port: 587,
       auth: {
         user: "apikey",
-        pass: process.env.SENDGRID_API_KEY!,
+        pass: process.env.SENDGRID_API_KEY,
       },
     });
     console.log("SendGrid user:", process.env.SENDGRID_USER);
-    console.log("SendGrid pass exists:", !!process.env.SENDGRID_API_KEY!);
+    console.log("SendGrid pass exists:", !!process.env.SENDGRID_API_KEY);
 
     // Determine the correct endpoint and URL
     const endpoint = emailType === "VERIFY" ? "verifyemail" : "resetpassword";

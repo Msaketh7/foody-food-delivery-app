@@ -9,7 +9,7 @@ interface SendEmailProps {
   token?: string; // optional token
 }
 
-// export const sendEmail = async ({ email, emailType, userId, token }: SendEmailProps) => {
+export const sendEmail = async ({ email, emailType, userId, token }: SendEmailProps) => {
   try {
     // Generate a token if not provided
     const secureToken = token || crypto.randomBytes(32).toString("hex");

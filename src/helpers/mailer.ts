@@ -36,6 +36,8 @@ export const sendEmail = async ({ email, emailType, userId, token }: SendEmailPr
         pass: process.env.SENDGRID_API_KEY!,
       },
     });
+    console.log("SendGrid user:", process.env.SENDGRID_USER);
+    console.log("SendGrid pass exists:", !!process.env.SENDGRID_API_KEY!);
 
     // Determine the correct endpoint and URL
     const endpoint = emailType === "VERIFY" ? "verifyemail" : "resetpassword";

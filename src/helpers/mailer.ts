@@ -1,4 +1,4 @@
-import nodemailer from "nodemailer";
+import sgMail from "@sendgrid/mail";
 import User from "@/models/userModel";
 import crypto from "crypto";
 
@@ -26,25 +26,7 @@ export const sendEmail = async ({ email, emailType, userId, token }: SendEmailPr
         resetPasswordTokenExpiry: Date.now() + 3600000,
       });
     }
-
-    if (!process.env.SENDGRID_API_KEY) {
-  console.error("❌ SENDGRID_API_KEY is missing");
-  throw new Error("SENDGRID_API_KEY is missing");
-}
-
-console.log("✅ SENDGRID_API_KEY found:", process.env.SENDGRID_API_KEY.slice(0, 5));
-
-    // Create nodemailer transport
-    const transport = nodemailer.createTransport({
-      host: "smtp.sendgrid.net",
-      port: 587,
-      auth: {
-        user: "apikey",
-        pass: process.env.SENDGRID_API_KEY,
-      },
-    });
-    console.log("SendGrid user:", process.env.SENDGRID_USER);
-    console.log("SendGrid pass exists:", !!process.env.SENDGRID_API_KEY);
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
 
     // Determine the correct endpoint and URL
     const endpoint = emailType === "VERIFY" ? "verifyemail" : "resetpassword";
@@ -63,11 +45,11 @@ console.log("✅ SENDGRID_API_KEY found:", process.env.SENDGRID_API_KEY.slice(0,
     };
 
     // Send the email
-    const mailResponse = await transport.sendMail(mailOptions);
-    return mailResponse;
+    const response = await sgMail.send(mailOptions);
+    return response;
 
   } catch (error: any) {
-    console.error("Error sending email:", error);
-    throw new Error(error.message);
+    console.error("SendGrid API Error:", error.response?.body || error.message);
+    throw new Error("Email sending failed");
   }
 };

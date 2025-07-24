@@ -40,10 +40,6 @@ export default function VerifyEmailPage() {
           Verify Email
         </h1>
 
-        <h2 className="text-xs text-gray-500 font-mono mb-3">
-          {token ? `Token: ${token}` : "No token found in URL"}
-        </h2>
-
         {verified && (
           <div className="p-3 mb-2 rounded-md bg-green-500 text-white text-center font-medium">
             ✅ Email verified successfully! You can now{" "}

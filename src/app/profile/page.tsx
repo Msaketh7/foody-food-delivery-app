@@ -6,6 +6,7 @@ import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
+import { CameraIcon } from "@heroicons/react/24/solid";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -13,14 +14,17 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [showConfirmLogout, setShowConfirmLogout] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
-  const [oldPassword, setOldPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmNewPassword, setConfirmNewPassword] = useState("");
+  
 
   const [editMode, setEditMode] = useState(false);
   const [updatedUsername, setUpdatedUsername] = useState('');
   const [updatedEmail, setUpdatedEmail] = useState('');
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  
+
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmNewPassword, setConfirmNewPassword] = useState("");
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -29,6 +33,7 @@ export default function ProfilePage() {
         setUser(res.data.data);
         setUpdatedUsername(res.data.data.username);
         setUpdatedEmail(res.data.data.email);
+        setPreviewImage(res.data.data.profileImage || null);
       } catch {
         toast.error("Unauthorized. Redirecting...");
         router.push('/login');
@@ -55,7 +60,7 @@ export default function ProfilePage() {
       const res = await axios.patch('/api/users/updatedetails', {
         username: updatedUsername,
         email: updatedEmail,
-        profileImage: previewImage, 
+        profileImage: previewImage ?? user?.profileImage, 
       });
       setUser(res.data.data);
       setEditMode(false);
@@ -64,6 +69,8 @@ export default function ProfilePage() {
       toast.error(error?.response?.data?.message || "Update failed");
     }
   };
+
+  
 
   const handlePasswordReset = async () => {
     if (newPassword !== confirmNewPassword) {
@@ -93,7 +100,7 @@ export default function ProfilePage() {
     }
   };
 
-  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: any) => {
     const file = e.target.files?.[0];
     if (!file) return;
     const CLOUD_NAME = 'dp46e5w7r';
@@ -146,7 +153,7 @@ export default function ProfilePage() {
               {/* Profile Picture */}
               <div className="flex flex-col items-center">
                 {previewImage ? (
-                  <img src={previewImage} alt="Preview" className="w-24 h-24 rounded-full object-cover" />
+                  <img src={previewImage || user?.profileImage || "/default-avatar.png"} alt="Profile" className="w-24 h-24 rounded-full object-cover" />
                 ) : (
                   <div className="w-24 h-24 rounded-full bg-gray-300 dark:bg-gray-600" />
                 )}

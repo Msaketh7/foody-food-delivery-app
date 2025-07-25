@@ -7,17 +7,19 @@ connect();
 
 export async function GET(request:NextRequest) {
     try {
-        const userId = getDataFromToken(request);
+        const userId = await getDataFromToken(request);
         const user = await User.findById(userId).select("-password");
+
+        if (!user) {
+            return NextResponse.json({ error: "User not found" }, { status: 404 });
+        }
+        
 
         return NextResponse.json({
             message: "User found",
             data: user,
         });
-
-        if (!user) {
-            return NextResponse.json({ error: "User not found" }, { status: 404 });
-        }
+        
 
         return NextResponse.json({ user, success: true });
     } catch (error: any) {

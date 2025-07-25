@@ -22,6 +22,7 @@ export async function PATCH(request: NextRequest) {
       { username, email, profileImage },
       { new: true , runValidators: true}
     ).select("-password");
+    console.log("Updating profile image:", profileImage);
 
     return NextResponse.json({
       message: "User details updated successfully",

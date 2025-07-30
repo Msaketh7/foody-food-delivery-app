@@ -6,14 +6,15 @@ import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { CameraIcon } from "@heroicons/react/24/solid";
+import { useTheme } from "../context/themeprovider";
+
 
 export default function ProfilePage() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [showConfirmLogout, setShowConfirmLogout] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
+  const { darkMode, toggleDarkMode } = useTheme();
   
 
   const [editMode, setEditMode] = useState(false);
@@ -77,12 +78,15 @@ export default function ProfilePage() {
       toast.error("New passwords do not match.");
       return;
     }
-
-     if (oldPassword !== user.Password) {
-      toast.error("Old password is incorrect.");
+    if (!oldPassword || !newPassword || !confirmNewPassword) {
+      toast.error("All password fields are required.");
       return;
     }
-
+    if (oldPassword === newPassword) {
+      toast.error("New password cannot be the same as the old password.");
+      return;
+    }
+    
     try {
       toast.loading("Updating password...");
       const res = await axios.patch("/api/users/resetpassword", {
@@ -96,7 +100,7 @@ export default function ProfilePage() {
       setConfirmNewPassword("");
     } catch (err: any) {
       toast.dismiss();
-      toast.error(err.response?.data?.message || "Password update failed.");
+      toast.error(err.response?.data?.error|| "Password update failed.");
     }
   };
 
@@ -128,12 +132,18 @@ export default function ProfilePage() {
       <header className="flex justify-between items-center px-6 py-4 bg-gray-100 dark:bg-gray-800 border-b border-gray-300 dark:border-gray-700 shadow">
         <h1 className="text-xl font-bold text-indigo-600 font-mono">MyApp | Profile</h1>
         <div className="flex items-center gap-4">
-          <button
-            onClick={() => setDarkMode(!darkMode)}
-            className="px-3 py-1 rounded bg-gray-700 text-white text-sm hover:bg-gray-600 transition"
-          >
-            {darkMode ? '☀️ Light' : '🌙 Dark'}
-          </button>
+              <label className="relative inline-flex items-center cursor-pointer">
+    <input
+      type="checkbox"
+      className="sr-only peer"
+      checked={!darkMode}
+      onChange={() => toggleDarkMode(!darkMode)}
+    />
+    <div className="w-12 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-indigo-500 rounded-full peer dark:bg-gray-600 peer-checked:bg-indigo-500 transition-all"></div>
+    <div className="absolute left-1 top-2 bg-none w-2 h-2  transition-all peer-checked:translate-x-5 flex items-center justify-cente">
+      {darkMode ? "🌙" : "☀️"}
+    </div>
+  </label>
           <button
             onClick={() => setShowConfirmLogout(true)}
             className="px-3 py-1 rounded bg-red-600 text-white text-sm hover:bg-red-500 transition"
@@ -205,7 +215,7 @@ export default function ProfilePage() {
                       className="w-full mb-2 p-2 rounded border dark:bg-gray-700"
                     />
                     <input
-                      type="password"
+                      type="text"
                       placeholder="Confirm New Password"
                       value={confirmNewPassword}
                       onChange={(e) => setConfirmNewPassword(e.target.value)}

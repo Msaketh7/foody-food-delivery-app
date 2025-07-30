@@ -6,6 +6,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { useTheme } from "../context/themeprovider";
+
 
 export default function SignUp() {
   const router = useRouter();
@@ -16,7 +18,7 @@ export default function SignUp() {
   });
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [darkMode, setDarkMode] = useState(true);
+  const {darkMode, toggleDarkMode} = useTheme();
 
   const themeClasses = darkMode
     ? "bg-gray-900 text-white"
@@ -60,12 +62,18 @@ export default function SignUp() {
             Login
           </Link>
         </nav>
-        <button
-          onClick={() => setDarkMode(!darkMode)}
-          className="bg-gray-700 text-white px-4 py-1 rounded hover:bg-gray-600 text-sm"
-        >
-          {darkMode ? "Light Mode" : "Dark Mode"}
-        </button>
+         <label className="relative inline-flex items-center cursor-pointer">
+    <input
+      type="checkbox"
+      className="sr-only peer"
+      checked={!darkMode}
+      onChange={() => toggleDarkMode(!darkMode)}
+    />
+    <div className="w-12 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-indigo-500 rounded-full peer dark:bg-gray-600 peer-checked:bg-indigo-500 transition-all"></div>
+    <div className="absolute left-1 top-2 bg-none w-2 h-2  transition-all peer-checked:translate-x-5 flex items-center justify-cente">
+      {darkMode ? "🌙" : "☀️"}
+    </div>
+  </label>
       </header>
 
       {/* Signup Form Section */}

@@ -20,7 +20,7 @@ export async function GET(request:NextRequest) {
             data: user,
         });
         
-
+        
         return NextResponse.json({ user, success: true });
     } catch (error: any) {
         return NextResponse.json({ error: error.message }, { status: 500 });

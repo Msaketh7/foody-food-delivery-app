@@ -38,6 +38,21 @@ const userSchema = new mongoose.Schema({
     resetPasswordTokenExpiry: Date,
     verifyToken: String,
     verifyTokenExpiry: Date,
+
+    address: [
+    {
+    label: {
+        type: String,
+        default: "Home" 
+    },
+    street: String,
+    city: String,
+    state: String,
+    zipCode: String,
+    country: String,
+    phone: String,
+    }
+]
 })
 
 const User = mongoose.models.User || mongoose.model("User", userSchema);

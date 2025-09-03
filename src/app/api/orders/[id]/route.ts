@@ -2,16 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import { connect } from "@/dbConfig/dbConfig";
 import Order from "@/models/ordersModels";
 
-type RouteContext {
-  params: { id: string };
-}
-
-export async function PUT(req: NextRequest, context: RouteContext) {
+export async function PUT(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
   await connect();
   const { status } = await req.json();
 
   const order = await Order.findByIdAndUpdate(
-    context.params.id,
+    params.id,
     { status },
     { new: true }
   );
@@ -26,9 +25,12 @@ export async function PUT(req: NextRequest, context: RouteContext) {
   return NextResponse.json({ success: true, order });
 }
 
-export async function DELETE(_: NextRequest, context: RouteContext) {
+export async function DELETE(
+  _: NextRequest,
+  { params }: { params: { id: string } }
+) {
   await connect();
-  const order = await Order.findByIdAndDelete(context.params.id);
+  const order = await Order.findByIdAndDelete(params.id);
 
   if (!order) {
     return NextResponse.json(

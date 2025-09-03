@@ -2,22 +2,40 @@ import { NextRequest, NextResponse } from "next/server";
 import { connect } from "@/dbConfig/dbConfig";
 import Order from "@/models/ordersModels";
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+interface RouteContext {
+  params: { id: string };
+}
+
+export async function PUT(req: NextRequest, context: RouteContext) {
   await connect();
-  const body = await req.json();
-  const { status } = body;
+  const { status } = await req.json();
 
   const order = await Order.findByIdAndUpdate(
-    params.id,
+    context.params.id,
     { status },
     { new: true }
   );
 
+  if (!order) {
+    return NextResponse.json(
+      { success: false, message: "Order not found" },
+      { status: 404 }
+    );
+  }
+
   return NextResponse.json({ success: true, order });
 }
 
-export async function DELETE(_: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(_: NextRequest, context: RouteContext) {
   await connect();
-  await Order.findByIdAndDelete(params.id);
+  const order = await Order.findByIdAndDelete(context.params.id);
+
+  if (!order) {
+    return NextResponse.json(
+      { success: false, message: "Order not found" },
+      { status: 404 }
+    );
+  }
+
   return NextResponse.json({ success: true, message: "Order deleted" });
 }

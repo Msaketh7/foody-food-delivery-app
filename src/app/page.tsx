@@ -121,8 +121,10 @@ export default function HomePage() {
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="text-lg sm:text-xl md:text-2xl mt-6 max-w-xl mx-auto drop-shadow-md">
             Discover your next favorite meal. Explore, order, and enjoy delicious food from top-rated restaurants.
           </motion.p>
-          <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }} transition={{ duration: 0.3 }} onClick={() => scrollToSection("features")} className="mt-8 px-6 sm:px-8 py-3 bg-white text-orange-600 text-lg font-semibold rounded-full shadow hover:shadow-lg">
-            Explore the Food
+          <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }} transition={{ duration: 0.3 }}  className="mt-8 px-6 sm:px-8 py-3 bg-white text-orange-600 text-lg font-semibold rounded-full shadow hover:shadow-lg">
+           <Link href='/restaurants'>
+           Explore More
+           </Link>
           </motion.button>
         </motion.div>
         <motion.button onClick={() => scrollToSection("features")} whileHover={{ scale: 1.2 }} animate={{ y: [0, 10, 0] }} transition={{ repeat: Infinity, duration: 2 }} className="absolute bottom-16 sm:bottom-20 z-10">

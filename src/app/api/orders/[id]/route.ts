@@ -2,7 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { connect } from "@/dbConfig/dbConfig";
 import Order from "@/models/ordersModels";
 
-export async function PUT(req: NextRequest, context: any) {
+// You can make a helper type if you want
+interface Params {
+  params: { id: string };
+}
+
+export async function PUT(req: NextRequest, context: Params) {
   await connect();
   const { status } = await req.json();
 
@@ -22,7 +27,7 @@ export async function PUT(req: NextRequest, context: any) {
   return NextResponse.json({ success: true, order });
 }
 
-export async function DELETE(_: NextRequest, context: any) {
+export async function DELETE(_: NextRequest, context: Params) {
   await connect();
   const order = await Order.findByIdAndDelete(context.params.id);
 
